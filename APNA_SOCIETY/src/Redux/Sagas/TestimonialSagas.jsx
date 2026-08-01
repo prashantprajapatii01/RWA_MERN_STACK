@@ -1,0 +1,73 @@
+import { put, takeEvery } from "redux-saga/effects"
+
+import { createRecord, deleteRecord, getRecord, updateRecord } from "./services/index"
+import { CREATE_TESTIMONIAL, CREATE_TESTIMONIAL_RED, DELETE_TESTIMONIAL, DELETE_TESTIMONIAL_RED, GET_TESTIMONIAL, GET_TESTIMONIAL_RED, UPDATE_TESTIMONIAL, UPDATE_TESTIMONIAL_RED } from "../Constant"
+// import { createMultipartRecord, deleteRecord, getRecord, updateMultipartRecord } from "./services/index"
+
+
+// function* createSaga(action) {                                                      //worker saga
+//     let response = yield createRecord("testimonial", action.payload)               //used this line in case when no file field is used
+//     // let response = yield createMultipartRecord("testimonial", action.payload)   //used this line in case when file field is used
+//     yield put({ type: CREATE_TESTIMONIAL_RED, payload: response })
+// }
+
+// function* getSaga() {                                                               //worker saga
+//     let response = yield getRecord("testimonial")
+//     yield put({ type: GET_TESTIMONIAL_RED, payload: response })
+// }
+
+// function* updateSaga(action) {                                                      //worker saga
+//     yield updateRecord("testimonial", action.payload)                           //used this line in case when no file field is used
+//     yield put({ type: UPDATE_TESTIMONIAL_RED, payload: action.payload })
+
+//     // let response = yield updateMultipartRecord("testimonial", action.payload)   //used this line in case when file field is used
+//     // yield put({ type: UPDATE_TESTIMONIAL_RED, payload: response })
+// }
+
+// function* deleteSaga(action) {                                                      //worker saga
+//     yield deleteRecord("testimonial", action.payload)
+//     yield put({ type: DELETE_TESTIMONIAL_RED, payload: action.payload })
+// }
+function* createSaga(action) {
+  let response = yield createRecord("testimonial", action.payload)
+
+  yield put({
+    type: CREATE_TESTIMONIAL_RED,
+    payload: response
+  })
+}
+
+function* getSaga() {
+  let response = yield getRecord("testimonial")
+
+  yield put({
+    type: GET_TESTIMONIAL_RED,
+    payload: Array.isArray(response)
+      ? response
+      : response?.data || []
+  })
+}
+
+function* updateSaga(action) {
+  let response = yield updateRecord("testimonial", action.payload)
+
+  yield put({
+    type: UPDATE_TESTIMONIAL_RED,
+    payload: response   // ✅ FIX
+  })
+}
+
+function* deleteSaga(action) {
+  yield deleteRecord("testimonial", action.payload)
+
+  yield put({
+    type: DELETE_TESTIMONIAL_RED,
+    payload: { _id: action.payload._id }   // ✅ FIX
+  })
+}
+export default function* TestimonialSagas() {
+    yield takeEvery(CREATE_TESTIMONIAL, createSaga)                                //Watcher Saga
+    yield takeEvery(GET_TESTIMONIAL, getSaga)                                      //Watcher Saga
+    yield takeEvery(UPDATE_TESTIMONIAL, updateSaga)                                //Watcher Saga
+    yield takeEvery(DELETE_TESTIMONIAL, deleteSaga)                                //Watcher Saga
+}

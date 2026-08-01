@@ -1,0 +1,20 @@
+const express = require("express")
+const router = express.Router()
+
+const {
+  createFaq,
+  getFaq,
+  getSingleFaq,
+  updateFaq,
+  deleteFaq
+} = require("../controllers/faqController")
+
+// BASE: /api/faq
+
+router.post("/", createFaq)
+router.get("/", getFaq)
+router.get("/:id", getSingleFaq)
+router.put("/:id", updateFaq)
+router.delete("/:id", deleteFaq)
+
+module.exports = router
